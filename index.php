@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Responsive Ebook Website Tutorial</title>
+    <title>MADAD Ebook Website</title>
 
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
@@ -43,6 +43,9 @@
 
         <div class="icons">
             <i class="fas fa-bars" id="menu-bars"></i>
+            <!-- <i class="fas fa-search" id="search-icon"></i>
+            <a href="#" class="fas fa-heart"></a>
+            <a href="#" class="fas fa-shopping-cart"></a> -->
         </div>
 
     </header>
@@ -68,7 +71,7 @@
                 <?php
                 include './model/db-connect.php';
 
-                $sql = "SELECT * FROM ebook LIMIT 3";
+                $sql = "SELECT * FROM ebook WHERE ebook_id = 1";
                 $query = mysqli_query($connect, $sql);
 
                 while ($row = mysqli_fetch_assoc($query)) {
@@ -80,9 +83,9 @@
                 ?>
                 <div class="swiper-slide slide">
                     <div class="content">
-                        <span>buku teristemewa kami</span>
+                        <span>buku teristimewa kami</span>
                         <h3><?= $ebook_nama ?></h3>
-                        <p>Dapatkan dan baca buku istemewa dari kami <?= $ebook_nama ?></p>
+                        <p>Dapatkan dan baca buku istimewa dari kami <?= $ebook_nama ?></p>
                         <a href="<?= $row['ebook_link'] ?>" class="btn">baca sekarang</a>
                     </div>
                     <div class="image">

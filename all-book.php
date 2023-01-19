@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Responsive Ebook Website Tutorial</title>
+    <title>MADAD Ebook Website</title>
 
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
@@ -15,9 +15,28 @@
     <!-- custom css file link  -->
     <link rel="stylesheet" href="css/style.css">
 
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
     <style>
         #dishes {
             margin-top: 50px;
+        }
+
+        .box {
+            height: 300px;
+        }
+
+        .box .btn {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+        }
+
+        .page-container {
+            margin-top: 40px;
+            margin-bottom: 50px;
         }
     </style>
 
@@ -54,10 +73,6 @@
             <a class="active" href="#dishes">all books</a>
         </nav>
 
-        <div class="icons">
-            <i class="fas fa-bars" id="menu-bars"></i>
-        </div>
-        
     </header>
 
     <!-- header section ends-->
@@ -71,7 +86,17 @@
             <?php
             include './model/db-connect.php';
 
-            $sql = "SELECT * FROM ebook";
+            $item_per_page = 10;
+
+            if (isset($_GET['page'])) {
+                $page = $_GET['page'];
+            } else {
+                $page = 1;
+            }
+
+            $start = ($page - 1) * $item_per_page;
+
+            $sql = "SELECT * FROM ebook LIMIT $start, $item_per_page";
             $query = mysqli_query($connect, $sql);
 
             while ($row = mysqli_fetch_assoc($query)) {
@@ -85,7 +110,7 @@
                     <a href="view-book.php?id=<?= $row['ebook_id'] ?>">
                         <img src="data:image;base64,<?php echo base64_encode($row['ebook_gambar']) ?>" alt="<?= $ebook_nama ?>">
                     </a>
-                    <h3><?= $ebook_nama ?></h3>
+
                     <a href="<?= $row['ebook_link'] ?>" class="btn">baca sekarang</a>
                 </div>
             <?php
@@ -93,6 +118,33 @@
             ?>
         </div>
 
+        <?php
+        $sql = "SELECT * FROM ebook";
+        $query = mysqli_query($connect, $sql);
+
+        $total_items = mysqli_num_rows($query);
+
+        $total_pages = ceil($total_items / $item_per_page);
+        ?>
+        <div class="page-container">
+            <?php
+            if ($page > 1) {
+            ?>
+                <a class="btn" href="all-book.php?page=<?= ($page - 1) ?>"><i class="tf-icon bx bx-chevron-left"></i></a>
+            <?php
+            }
+            for ($i = 1; $i <= $total_pages; $i++) {
+            ?>
+                <a href="all-book.php?page=<?= $i ?>" class="btn"><?= $i ?></a>
+            <?php
+            }
+            if ($page < $total_pages) {
+            ?>
+                <a class="btn" href="all-book.php?page=<?= ($page + 1) ?>"><i class="tf-icon bx bx-chevron-right"></i></a>
+            <?php
+            }
+            ?>
+        </div>
     </section>
 
     <!-- dishes section ends -->

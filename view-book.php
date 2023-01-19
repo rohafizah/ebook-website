@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Responsive Ebook Website Tutorial</title>
+    <title>MADAD Ebook Website</title>
 
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
@@ -53,10 +53,6 @@
             <a href="all-book.php">all books</a>
         </nav>
 
-        <div class="icons">
-            <i class="fas fa-bars" id="menu-bars"></i>
-        </div>
-        
     </header>
 
     <!-- header section ends-->
