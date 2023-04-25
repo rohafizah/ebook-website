@@ -15,64 +15,11 @@
     <!-- custom css file link  -->
     <link rel="stylesheet" href="css/style.css">
 
-    <style>
-        .form-popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-}
-
-.show {
-    display: block;
-}
-
-.form-popup form {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    width: 500px;
-    height: 400px;
-}
-.form-popup form label {
-  display:block;
-  margin-bottom: 10px;
-  font-size: 16px;
-}
-.form-popup form input[type="text"],
-.form-popup form input[type="password"] {
-  display: block;
-  margin-bottom: 20px;
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-.form-popup form button[type="submit"] {
-  background-color:  #192a56;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  display: block;
-  margin: auto;
-}
-.form-popup form button:hover{
-  background: #27ae60;
-}
+        
         </style>
 
     <script> 
+    
         window.addEventListener("load", () => {
             const loader = document.querySelector(".loader");
 
@@ -87,16 +34,63 @@
 
 <body>
 
-    <!-- header section starts      -->
+    
+<?php include('signup.php');?>
+<?php
+session_start();
+if (isset($_GET['logout'])) {
+  // Unset session variables and destroy the session
+  session_unset();
+  session_destroy();
+  header("Location: index.php");
+  exit();
+}
+?>
 
-    <header>
-        <a href="#" class="logo">ebook.</a>
+<!-- header section starts -->
+<header>
+    <a href="#" class="logo">ebook.</a>
 
-        <nav class="navbar">
-            <a class="active" href="#home">home</a>
-            <a href="all-book.php">all books</a>
-            <a href="#" class="signup-btn">Sign in</a>
-        </nav>
+    <nav class="navbar">
+  <a class="active" href="#home">home</a>
+  <a href="all-book.php">all books</a>
+  <?php
+  if (isset($_SESSION['user_id'])) {
+    // User is logged in, show "Log out" button
+    echo '<a href="index.php?logout=true" class="signup-btn">Log out</a>';
+  } else {
+    // User is not logged in, show "Sign up" button
+    echo '<a href="#" class="signup-btn" onclick="toggleSignupForm()">Sign up</a>';
+  }
+  ?>
+</nav>
+    
+
+    <script>
+   function toggleSignupForm() {
+            const signupBtn = document.querySelector(".signup-btn");
+            const signupPopup = document.getElementById("signup-form-popup");
+            if (signupBtn.textContent === "Sign up") {
+                // change text to "Log out"
+                signupBtn.textContent = "Log out";
+                // remove sign up event listener
+                signupBtn.removeEventListener("click", toggleSignupForm);
+                // add logout event listener
+                signupBtn.addEventListener("click", logOut);
+            }
+            // show or hide sign up form popup
+            signupPopup.classList.toggle("show");
+        }
+
+        function logOut() {
+            // unset session variable
+            <?php unset($_SESSION['signed_up']); ?>
+            // redirect to index.php
+            window.location.href = "index.php";
+        }
+</script>
+
+
 
         <div class="icons">
             <i class="fas fa-bars" id="menu-bars"></i>
@@ -125,59 +119,52 @@
 
             <div class="swiper-wrapper wrapper">
 
-                <?php
-                include './model/db-connect.php';
+                <!-- <?php
+                // include './model/db-connect.php';
 
-                $sql = "SELECT * FROM ebook WHERE ebook_id = 1";
-                $query = mysqli_query($connect, $sql);
+                // $sql = "SELECT * FROM ebook WHERE ebook_id = 1";
+                // $query = mysqli_query($connect, $sql);
 
-                while ($row = mysqli_fetch_assoc($query)) {
+                // while ($row = mysqli_fetch_assoc($query)) {
 
-                    $ebook_nama = strtolower($row['ebook_nama']);
-                    $ebook_nama = ucwords($ebook_nama);
-                    $image = $row['ebook_gambar'];
-                }
-                ?>
+                //     $ebook_nama = strtolower($row['ebook_nama']);
+                //     $ebook_nama = ucwords($ebook_nama);
+                //     $image = $row['ebook_gambar'];
+                // }
+                ?> -->
+   
+   <?php
+include './model/db-connect.php';
 
-                <div class="swiper-slide slide">
-                    <div class="content">
-                        <span>buku teristimewa kami</span>
-                        <h3><?= $ebook_nama ?></h3>
-                        <p>Dapatkan dan baca buku istimewa dari kami <?= $ebook_nama ?></p>
-                        <a href="signin.php"class="btn">baca sekarang</a>
+$sql = "SELECT * FROM ebook WHERE ebook_id = 1";
+$query = mysqli_query($connect, $sql);
 
-               
-                    
-                    </div>
-                    <div class="image">
-                        <img src="data:image;base64,<?php echo base64_encode($image) ?>" alt="<?= $ebook_nama ?>">
-                    </div>
-                </div>
+while ($row = mysqli_fetch_assoc($query)) {
+
+    $ebook_nama = strtolower($row['ebook_nama']);
+    $ebook_nama = ucwords($ebook_nama);
+    $image = $row['ebook_gambar'];
+    $ebook_link = $row['ebook_link'];
+}
+?>
+
+<div class="swiper-slide slide">
+  <div class="content">
+    <span>buku teristimewa kami</span>
+    <h3><?= $ebook_nama ?></h3>
+    <p>Dapatkan dan baca buku istimewa dari kami <?= $ebook_nama ?></p>
+    <a href="signin.php?ebook_id=1" class="btn">baca sekarang</a>
+
+                   
+</div>
+  <div class="image">
+    <img src="data:image;base64,<?php echo base64_encode($image) ?>" alt="<?= $ebook_nama ?>">
+  </div>
+</div>
+
             </div>
         </div>
-
-    <div id="signup-form" class="form-popup">
-    <form action="#">
-    <h2>Sign In</h2>
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <button type="submit">Sign In</button>
-    </form>
-    </div>
-
-    <script>
-        const signupBtn = document.querySelector(".signup-btn");
-const signupForm = document.querySelector("#signup-form");
-
-signupBtn.addEventListener("click", function() {
-    signupForm.classList.toggle("show");
-});
-
-        </script>
-
-
+ 
     </section>
 
     <!-- home section ends -->
