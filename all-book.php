@@ -39,7 +39,7 @@
             margin-bottom: 50px;
         }
     </style>
-
+ 
     <script>
         window.addEventListener("load", () => {
             const loader = document.querySelector(".loader");
@@ -65,7 +65,12 @@
     <!-- header section starts      -->
 
     <header>
-
+    <?php
+session_start();
+if(isset($_SESSION['user_id'])) {
+  $ebook_link = isset($_SESSION['ebook_link']) ? $_SESSION['ebook_link'] : null;
+}
+?>
         <a href="index.php" class="logo">ebook.</a>
 
         <nav class="navbar">
@@ -82,41 +87,47 @@
 
     <section class="dishes" id="dishes">
 
-        <div class="box-container">
+    <div class="box-container">
+    <?php
+    include './model/db-connect.php';
+
+    $item_per_page = 10;
+
+    if (isset($_GET['page'])) {
+        $page = $_GET['page'];
+    } else {
+        $page = 1;
+    }
+
+    $start = ($page - 1) * $item_per_page;
+
+    $sql = "SELECT * FROM ebook LIMIT $start, $item_per_page";
+    $query = mysqli_query($connect, $sql);
+
+    while ($row = mysqli_fetch_assoc($query)) {
+
+        $ebook_nama = strtolower($row['ebook_nama']);
+        $ebook_nama = ucwords($ebook_nama);
+    ?>
+        <div class="box">
+            <a href="#" class="fas fa-heart"></a>
+            <a href="view-book.php?id=<?= $row['ebook_id'] ?>" class="fas fa-eye"></a>
+            <a href="view-book.php?id=<?= $row['ebook_id'] ?>"><img src="data:image;base64,<?php echo base64_encode($row['ebook_gambar']) ?>" alt="<?= $ebook_nama ?>"></a>
             <?php
-            include './model/db-connect.php';
-
-            $item_per_page = 10;
-
-            if (isset($_GET['page'])) {
-                $page = $_GET['page'];
+            if (isset($_SESSION['user_id'])) {
+                // user is signed in, display "Baca Sekarang" button with ebook link
+                echo '<a href="' . $row['ebook_link'] . '" class="btn">Baca Sekarang</a>';
             } else {
-                $page = 1;
-            }
-
-            $start = ($page - 1) * $item_per_page;
-
-            $sql = "SELECT * FROM ebook LIMIT $start, $item_per_page";
-            $query = mysqli_query($connect, $sql);
-
-            while ($row = mysqli_fetch_assoc($query)) {
-
-                $ebook_nama = strtolower($row['ebook_nama']);
-                $ebook_nama = ucwords($ebook_nama);
-            ?>
-                <div class="box">
-                    <!-- <a href="#" class="fas fa-heart"></a> -->
-                    <a href="view-book.php?id=<?= $row['ebook_id'] ?>" class="fas fa-eye"></a>
-                    <a href="view-book.php?id=<?= $row['ebook_id'] ?>">
-                        <img src="data:image;base64,<?php echo base64_encode($row['ebook_gambar']) ?>" alt="<?= $ebook_nama ?>">
-                    </a>
-
-                    <a href="<?= $row['ebook_link'] ?>" class="btn">baca sekarang</a>
-                </div>
-            <?php
+                // user is not signed in, display "Baca Sekarang" button with sign-in link
+                echo '<a href="signin.php?ebook_id=' . $row['ebook_id'] . '" class="btn">Baca Sekarang</a>';
             }
             ?>
         </div>
+    <?php
+    }
+    ?>
+</div>
+
 
         <?php
         $sql = "SELECT * FROM ebook";
@@ -145,6 +156,8 @@
             }
             ?>
         </div>
+
+
     </section>
 
     <!-- dishes section ends -->
