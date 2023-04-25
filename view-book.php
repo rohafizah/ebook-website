@@ -36,65 +36,75 @@
 
 <body>
 
-    <!-- loader part  -->
-    <div class="loader">
-        <img src="images/book.gif" alt="">
-    </div>
-    <!-- loader part  -->
+   <!-- loader part  -->
+<div class="loader">
+    <img src="images/book.gif" alt="">
+</div>
+<!-- loader part  -->
 
-    <!-- header section starts      -->
+<!-- header section starts      -->
+<header>
+<?php
+session_start();
+if(isset($_SESSION['user_id'])) {
+  $ebook_link = isset($_SESSION['ebook_link']) ? $_SESSION['ebook_link'] : null;
+}
+?>
+    <a href="index.php" class="logo">ebook.</a>
+    <nav class="navbar">
+        <a href="index.php">home</a>
+        <a href="all-book.php">all books</a>
+    </nav>
+</header>
+<!-- header section ends-->
 
-    <header>
+<!-- about section starts  -->
+<section class="about" id="about">
+    <div class="row">
+        <?php
+        include './model/db-connect.php';
 
-        <a href="index.php" class="logo">ebook.</a>
+        $id = isset($_GET['id']) ? $_GET['id'] : '';
 
-        <nav class="navbar">
-            <a href="index.php">home</a>
-            <a href="all-book.php">all books</a>
-        </nav>
+        if (!empty($id)) {
+          $id = mysqli_real_escape_string($connect, $id);
 
-    </header>
+          $stmt = mysqli_prepare($connect, "SELECT * FROM ebook WHERE ebook_id = ?");
+          mysqli_stmt_bind_param($stmt, "i", $id);
+          mysqli_stmt_execute($stmt);
 
-    <!-- header section ends-->
+          $result = mysqli_stmt_get_result($stmt);
+          $row = mysqli_fetch_assoc($result);
 
+          if ($row) {
+            $ebook_nama = strtolower($row['ebook_nama']);
+            $ebook_nama = ucwords($ebook_nama);
+            $image = $row['ebook_gambar'];
+            $link = $row['ebook_link'];
+          }
+        }
+        ?>
+        <div class="image">
+            <img src="data:image;base64,<?php echo base64_encode($image) ?>" alt="<?= $ebook_nama ?>">
+        </div>
 
-    <!-- about section starts  -->
-
-    <section class="about" id="about">
-
-        <div class="row">
+        <div class="content">
+            <h3><?= $ebook_nama ?></h3>
+            <p>Jom baca <?= $ebook_nama ?> sekarang! Dengan ebook ini, anda serta keluarga pastinya akan mendapat suatu ilmu baru yang sangat bermanfaat.</p>
 
             <?php
-            include './model/db-connect.php';
-
-            $id = mysqli_real_escape_string($connect, $_GET['id']);
-
-            $sql = "SELECT * FROM ebook WHERE ebook_id = '$id'";
-            $query = mysqli_query($connect, $sql);
-
-            while ($row = mysqli_fetch_assoc($query)) {
-
-                $ebook_nama = strtolower($row['ebook_nama']);
-                $ebook_nama = ucwords($ebook_nama);
-                $image = $row['ebook_gambar'];
-                $link = $row['ebook_link'];
+            if (isset($_SESSION['user_id'])) {
+                // user is signed in, display "Baca Sekarang" button with ebook link
+                echo '<a href="' . $row['ebook_link'] . '" class="btn">Baca Sekarang</a>';
+            } else {
+                // user is not signed in, display "Baca Sekarang" button with sign-in link
+                echo '<a href="signin.php?ebook_id=' . $row['ebook_id'] . '" class="btn">Baca Sekarang</a>';
             }
             ?>
 
-            <div class="image">
-                <img src="data:image;base64,<?php echo base64_encode($image) ?>" alt="<?= $ebook_nama ?>">
-            </div>
-
-            <div class="content">
-                <h3><?= $ebook_nama ?></h3>
-                <p>Jom baca <?= $ebook_nama ?> sekarang! Dengan ebook ini, anda serta keluarga pastinya akan mendapat suatu ilmu baru yang sangat bermanfaat.</p>
-
-                <a href="<?= $link ?>" class="btn">Baca sekarang</a>
-            </div>
-
         </div>
-
-    </section>
+    </div>
+</section>
 
     <!-- about section ends -->
 
